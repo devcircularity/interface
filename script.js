@@ -1,39 +1,46 @@
 function handleKeyClick(key) {
-    var input = document.getElementById('phone-number');
-    var value = input.value;
-    var keyText = key.textContent.trim();
-  
-    if (keyText === '(?123)') {
+  var input = document.getElementById('phone-number');
+  var value = input.value;
+  var keyText = key.textContent.trim();
+
+  if (keyText === '(?123)') {
       if (currentKeyboard === 'qwerty') {
-        toggleKeyboardMode();
+          toggleKeyboardMode();
       }
-    } else if (keyText === '⌫') {
+  } else if (keyText === '⌫') {
       input.value = value.slice(0, -1);
-    } else if (keyText === '⏎') {
+  } else if (keyText === '⏎') {
       // Send input value to Python script
       sendInputToPython(value);
-    } else if (keyText === 'ABC') {
+  } else if (keyText === 'ABC') {
       if (currentKeyboard === 'numeric') {
-        toggleKeyboardMode();
+          toggleKeyboardMode();
       }
-    } else if (keyText === '⇧') {
+  } else if (keyText === '⇧') {
       toggleShiftMode();
-    } else {
+  } else {
       input.value += keyText;
-    }
   }
-  
-  function sendInputToPython(inputValue) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'main.py', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function () {
+}
+
+function sendInputToPython(inputValue) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'main.py', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
-        var response = xhr.responseText;
-        alert('Response from Python script: ' + response);
+          var response = xhr.responseText;
+          alert('Response from Python script: ' + response);
       }
-    };
-    var data = JSON.stringify({ input: inputValue });
-    xhr.send(data);
+  };
+  var data = JSON.stringify({ input: inputValue });
+  xhr.send(data);
+}
+
+// Add event listener to the input field
+var inputField = document.getElementById('phone-number');
+inputField.addEventListener('keyup', function (event) {
+  if (event.key === 'Enter') {
+      sendInputToPython(inputField.value);
   }
-  
+});
